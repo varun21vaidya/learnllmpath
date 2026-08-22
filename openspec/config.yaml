@@ -1,0 +1,31 @@
+schema: spec-driven
+
+context: |
+  Product: skilllog — neobrutalism web app for an LLM/Agentic-AI learning roadmap + progress tracker.
+  Stack: Next.js App Router (TypeScript) + Auth.js v5 (Google OAuth + credentials w/ bcrypt) + Supabase Postgres.
+  Deploy target: Vercel free tier.
+  Roadmap content source: LLM_Agentic_AI_Roadmap_Tracker.md (10 pillars, ~45 items, [KEY] badges, gap-fill callouts).
+  Public: roadmap readable without auth; progress/notes require login.
+  Design: neobrutalism (bold borders, vivid accents, raw high-contrast).
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

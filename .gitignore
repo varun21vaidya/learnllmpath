@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+build/
+
+# env files with secrets
+.env
+.env.local
+.env.*.local
+
+# keep the template
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# opencode runtime deps (has own gitignore but double-guard)
+.opencode/node_modules/

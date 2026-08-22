@@ -1,0 +1,289 @@
+{
+  "rows": [
+    {
+      "item": "p1-big-picture-what-an-llm-is",
+      "url": "https://www.youtube.com/watch?v=LPZh9BOjkQs",
+      "status": "ok"
+    },
+    {
+      "item": "p1-full-forward-pass-embeddings-softmax",
+      "url": "https://www.youtube.com/watch?v=wjZofJX0v4M",
+      "status": "ok"
+    },
+    {
+      "item": "p1-attention-q-k-v-masking-multi-head",
+      "url": "https://www.youtube.com/watch?v=eMlx5fFNoYc",
+      "status": "ok"
+    },
+    {
+      "item": "p1-how-facts-live-in-mlp-layers-often-skipped",
+      "url": "https://www.youtube.com/watch?v=9-Jl0dxWQs8",
+      "status": "ok"
+    },
+    {
+      "item": "p1-tokenization-bpe-positional-encoding",
+      "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+      "status": "ok"
+    },
+    {
+      "item": "p2-apis-prompts-streaming-multi-provider",
+      "url": "https://github.com/ed-donner/llm_engineering",
+      "status": "ok"
+    },
+    {
+      "item": "p2-tool-function-calling",
+      "url": "https://www.udemy.com/courses/search/?q=llm+engineering+ed+donner",
+      "status": "ok"
+    },
+    {
+      "item": "p2-fast-uis-gradio",
+      "url": "https://www.udemy.com/courses/search/?q=llm+engineering+ed+donner",
+      "status": "ok"
+    },
+    {
+      "item": "p2-open-source-models-huggingface",
+      "url": "https://www.udemy.com/courses/search/?q=llm+engineering+ed+donner",
+      "status": "ok"
+    },
+    {
+      "item": "p2-model-selection-leaderboards",
+      "url": "https://www.udemy.com/courses/search/?q=llm+engineering+ed+donner",
+      "status": "ok"
+    },
+    {
+      "item": "p2-structured-output-json-pydantic",
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs",
+      "status": "ok"
+    },
+    {
+      "item": "p3-why-rag-embeddings-vector-db-cosine (RAG from First Principles — Ankit Bansal)",
+      "url": "",
+      "status": "unverified"
+    },
+    {
+      "item": "p3-build-a-real-rag-app",
+      "url": "https://github.com/ed-donner/llm_engineering",
+      "status": "ok"
+    },
+    {
+      "item": "p3-hybrid-search-bm25-dense-rrf",
+      "url": "https://www.youtube.com/watch?v=mHxLXzYjQRE",
+      "status": "ok"
+    },
+    {
+      "item": "p3-reranking-cross-encoders-colbert",
+      "url": "https://fieldguidetoai.com/guides/advanced-rag-techniques",
+      "status": "ok"
+    },
+    {
+      "item": "p3-query-transforms-hyde-multi-query",
+      "url": "https://reynaldineo.com/blog/exploring-advance-retrieval-techniques",
+      "status": "ok"
+    },
+    {
+      "item": "p3-chunking-parent-child-sentence-window",
+      "url": "https://atlan.com/know/advanced-rag-techniques/",
+      "status": "ok"
+    },
+    {
+      "item": "p3-graphrag-raptor-contextual-retrieval",
+      "url": "https://atlan.com/know/advanced-rag-techniques/",
+      "status": "ok"
+    },
+    {
+      "item": "p3-metrics-faithfulness-context-precision-recall",
+      "url": "https://www.youtube.com/watch?v=7_LTU0LA374",
+      "status": "ok"
+    },
+    {
+      "item": "p3-ragas-hands-on-in-python",
+      "url": "https://www.analyticsvidhya.com/blog/2024/05/a-beginners-guide-to-evaluating-rag-pipelines-using-ragas/",
+      "status": "ok"
+    },
+    {
+      "item": "p4-the-one-rule-fine-tune-behavior-not-knowledge",
+      "url": "https://www.layer3labs.io/guides/how-to-fine-tune-an-llm",
+      "status": "ok"
+    },
+    {
+      "item": "p4-lora-qlora-rank-alpha-dropout-4-bit-nf4",
+      "url": "https://www.youtube.com/watch?v=t1caDsMzWBk",
+      "status": "ok"
+    },
+    {
+      "item": "p4-quick-peft-overview-lora-qlora-dora (PEFT Explained — Arivu)",
+      "url": "",
+      "status": "unverified"
+    },
+    {
+      "item": "p4-end-to-end-deep-dive-code",
+      "url": "https://www.youtube.com/watch?v=cO6Ly7mIziQ",
+      "status": "ok"
+    },
+    {
+      "item": "p4-fine-tune-in-the-course",
+      "url": "https://www.udemy.com/courses/search/?q=llm+engineering+ed+donner",
+      "status": "ok"
+    },
+    {
+      "item": "p5-agent-vs-workflow-react-loop",
+      "url": "https://www.youtube.com/watch?v=FwOTs4UxQS4",
+      "status": "ok"
+    },
+    {
+      "item": "p5-react-in-practice",
+      "url": "https://www.youtube.com/watch?v=vFdIrZyKEwQ",
+      "status": "ok"
+    },
+    {
+      "item": "p5-4-patterns-evals-whole-course",
+      "url": "https://www.deeplearning.ai/courses/agentic-ai/",
+      "status": "ok"
+    },
+    {
+      "item": "p5-reflection-tool-use-planning-multi-agent",
+      "url": "https://github.com/rczhen/agentic-ai-course-notes",
+      "status": "ok"
+    },
+    {
+      "item": "p5-build-8-agent-projects",
+      "url": "https://github.com/ed-donner/agents",
+      "status": "ok"
+    },
+    {
+      "item": "p6-context-window-as-scarce-ram-write-select-compre",
+      "url": "https://www.langchain.com/blog/context-engineering-for-agents",
+      "status": "ok"
+    },
+    {
+      "item": "p6-anthropic-s-mental-model-failure-modes",
+      "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "status": "ok"
+    },
+    {
+      "item": "p6-short-vs-long-vs-episodic-memory",
+      "url": "https://weaviate.io/blog/context-engineering",
+      "status": "ok"
+    },
+    {
+      "item": "p6-memory-taxonomy-tools-mem0-letta-zep",
+      "url": "https://machinelearningmastery.com/ai-agent-memory-explained-in-3-levels-of-difficulty/",
+      "status": "ok"
+    },
+    {
+      "item": "p7-langchain-vs-langgraph-vs-langsmith",
+      "url": "https://www.youtube.com/watch?v=e-GR3PlEOVU",
+      "status": "ok"
+    },
+    {
+      "item": "p7-langgraph-state-nodes-edges-memory-hitl",
+      "url": "https://www.youtube.com/watch?v=rV3HJ4LEZ7k",
+      "status": "ok"
+    },
+    {
+      "item": "p7-langgraph-full-free-course",
+      "url": "https://www.youtube.com/watch?v=jGg_1h0qzaM",
+      "status": "ok"
+    },
+    {
+      "item": "p7-crewai-openai-sdk-autogen-adk",
+      "url": "https://github.com/ed-donner/agents",
+      "status": "ok"
+    },
+    {
+      "item": "p7-tracing-debugging-langsmith",
+      "url": "https://docs.langchain.com/langsmith/",
+      "status": "ok"
+    },
+    {
+      "item": "p8-why-mcp-2-min-mental-model",
+      "url": "https://www.youtube.com/watch?v=cGuyrANVi4A",
+      "status": "ok"
+    },
+    {
+      "item": "p8-why-architecture-lifecycle-build",
+      "url": "https://www.youtube.com/playlist?list=PLKnIA16_Rmva_oZ9F4ayUu9qcWgF7Fyc0",
+      "status": "ok"
+    },
+    {
+      "item": "p8-full-build-server-client-tools-resources-prompts",
+      "url": "https://www.youtube.com/watch?v=ZoZxQwp1PiM",
+      "status": "ok"
+    },
+    {
+      "item": "p8-production-server-w-fastmcp-auth",
+      "url": "https://www.youtube.com/watch?v=oG9yVmggMnE",
+      "status": "ok"
+    },
+    {
+      "item": "p8-hands-on-labs-multi-language",
+      "url": "https://github.com/microsoft/mcp-for-beginners",
+      "status": "ok"
+    },
+    {
+      "item": "p8-all-in-one-course-incl-security",
+      "url": "https://www.udemy.com/course/model-context-protocol/",
+      "status": "ok"
+    },
+    {
+      "item": "p8-tool-poisoning-line-jumping-rug-pulls",
+      "url": "https://owasp.org/www-community/attacks/MCP_Tool_Poisoning",
+      "status": "ok"
+    },
+    {
+      "item": "p8-full-threat-model-defenses",
+      "url": "https://lenshq.io/blog/mcp-security-tool-poisoning-threat-model/",
+      "status": "ok"
+    },
+    {
+      "item": "p8-auth-credential-risk-cves",
+      "url": "https://www.sentinelone.com/cybersecurity-101/cybersecurity/mcp-security/",
+      "status": "ok"
+    },
+    {
+      "item": "p9-objective-vs-llm-judge-error-analysis-traces",
+      "url": "https://www.deeplearning.ai/courses/agentic-ai/",
+      "status": "ok"
+    },
+    {
+      "item": "p9-rag-evals-ragas-faithfulness-precision-recall",
+      "url": "https://www.youtube.com/watch?v=7_LTU0LA374",
+      "status": "ok"
+    },
+    {
+      "item": "p9-ragas-in-code-run-in-ci",
+      "url": "https://jheiduk.com/posts/ragas-evaluation-tutorial/",
+      "status": "ok"
+    },
+    {
+      "item": "p9-tracing-observability-in-practice",
+      "url": "https://docs.langchain.com/langsmith/",
+      "status": "ok"
+    },
+    {
+      "item": "p10-all-10-risks-in-4-minutes-overview",
+      "url": "https://www.youtube.com/watch?v=j04st4edDKI",
+      "status": "ok"
+    },
+    {
+      "item": "p10-llm01-prompt-injection-direct-indirect",
+      "url": "https://www.youtube.com/watch?v=IvDCxdJRKRg",
+      "status": "ok"
+    },
+    {
+      "item": "p10-deep-dive-w-real-exploits-fixes",
+      "url": "https://www.linkedin.com/posts/ali-dorri_deep-dive-into-owasp-top-10-for-large-language-activity-7336189972179230720-xkUX",
+      "status": "ok"
+    },
+    {
+      "item": "p10-practitioner-guide-every-entry-controls",
+      "url": "https://maciejzalwert.medium.com/securing-llm-systems-a-practical-guide-to-the-owasp-top-10-c95453611374",
+      "status": "ok"
+    },
+    {
+      "item": "p10-full-defensive-course",
+      "url": "https://www.udemy.com/courses/search/?q=owasp+top+10+llm+applications",
+      "status": "ok"
+    }
+  ]
+}
