@@ -222,6 +222,7 @@ body {
 .nb-p-8 { padding: 2rem; }
 
 .nb-page { max-width: 72rem; min-width: 0; margin-inline: auto; padding: 1.5rem; width: 100%; }
+.nb-page > *, .nb-hero > *, .nb-card > * { min-width: 0; max-width: 100%; }
 .nb-center { flex: 1; display: grid; place-items: center; padding: 1.5rem; }
 .nb-track-toggle { max-width: 100%; overflow-x: auto; }
 
@@ -288,6 +289,17 @@ body {
   .nb-hero > .flex > .nb-btn { width: 100%; }
   .nb-track-toggle { display: flex; width: 100%; }
   .nb-track-toggle a { flex: 1 0 auto; text-align: center; }
+}
+
+@media (max-width: 355px) {
+  .nb-page { padding-inline: 0.75rem; }
+  .nb-site-nav .nb-page { gap: 0.5rem; }
+  .nb-site-nav .nb-page > div:last-child { gap: 0.4rem; }
+  .nb-site-nav .nb-btn-small { padding-inline: 0.5rem; font-size: 0.72rem; }
+  .nb-hero { padding-inline: 0.75rem; }
+  .nb-hero .nb-title { font-size: 2.5rem; line-height: 1.05; overflow-wrap: anywhere; }
+  .nb-hero-copy { overflow-wrap: anywhere; }
+  .nb-track-toggle a { padding-inline: 0.5rem; font-size: 0.78rem; }
 }
 
 @media (max-width: 640px) {
