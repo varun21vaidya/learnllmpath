@@ -48,9 +48,13 @@
 html {
   color-scheme: light;
   background: var(--color-paper);
+  overflow-x: hidden;
 }
 
 body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   background-color: var(--color-paper);
   background-image: radial-gradient(color-mix(in srgb, var(--color-ink) 14%, transparent) 0.7px, transparent 0.7px);
   background-size: 7px 7px;
@@ -217,7 +221,7 @@ body {
 .nb-p-6 { padding: 1.5rem; }
 .nb-p-8 { padding: 2rem; }
 
-.nb-page { max-width: 72rem; margin-inline: auto; padding: 1.5rem; width: 100%; }
+.nb-page { max-width: 72rem; min-width: 0; margin-inline: auto; padding: 1.5rem; width: 100%; }
 .nb-center { flex: 1; display: grid; place-items: center; padding: 1.5rem; }
 .nb-track-toggle { max-width: 100%; overflow-x: auto; }
 
@@ -274,6 +278,9 @@ body {
 
 @media (max-width: 640px) {
   .nb-page { padding-inline: 1rem; }
+  .nb-site-nav .nb-page { justify-content: center; }
+  .nb-site-nav .nb-page > a { margin-right: 0; width: 100%; text-align: center; }
+  .nb-site-nav .nb-page > div:last-child { justify-content: center; width: 100%; }
   .nb-hero { padding: 2.5rem 1rem; }
   .nb-pillar-grid, .nb-action-grid, .nb-support-grid { grid-template-columns: 1fr; }
   .nb-pillar-card { min-height: 0; }

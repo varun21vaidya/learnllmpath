@@ -7,7 +7,7 @@ export async function SiteNav() {
   const session = await auth();
 
   return (
-    <nav className="border-b border-ink bg-ink text-paper">
+    <nav className="nb-site-nav border-b border-ink bg-ink text-paper">
       <div className="nb-page flex flex-wrap items-center gap-x-3 gap-y-2 py-3">
         <Link
           href="/"
