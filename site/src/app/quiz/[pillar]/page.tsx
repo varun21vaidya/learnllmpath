@@ -21,7 +21,7 @@ export default async function QuizPage({ params }: { params: Promise<{ pillar: s
     if (pillarN > 1) alreadyPassed = await hasPassedQuiz(session.user.id, pillarN - 1);
     else alreadyPassed = true;
   } catch {
-    // DB unavailable — render quiz without gate info
+    // DB unavailable: render quiz without gate info
   }
 
   const safeQuestions = quiz.questions.map(({ id, prompt, options }) => ({ id, prompt, options }));
@@ -29,7 +29,7 @@ export default async function QuizPage({ params }: { params: Promise<{ pillar: s
   return (
     <main className="nb-page nb-center">
       <div className="w-full max-w-2xl nb-stack-lg">
-        <Link href="/" className="nb-btn nb-btn-small bg-white w-fit">
+        <Link href="/" className="nb-btn nb-btn-small bg-surface w-fit">
           ← Roadmap
         </Link>
         <QuizRunner pillarN={pillarN} questions={safeQuestions} alreadyPassed={alreadyPassed} />

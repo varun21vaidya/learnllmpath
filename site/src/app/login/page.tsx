@@ -1,6 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { LoginForm, SignOutButton } from "@/components/login-form";
 import { auth, googleEnabled } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  title: "Learn LLM Path: Sign In",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage() {
   const session = await auth();
@@ -8,7 +14,7 @@ export default async function LoginPage() {
   return (
     <main className="nb-page nb-center">
       <div className="nb-card nb-p-8 w-full max-w-md nb-stack-lg">
-        <h1 className="nb-title">skilllog</h1>
+        <h1 className="nb-title">Learn LLM Path</h1>
         {session?.user ? (
           <div className="nb-stack text-center">
             <p>

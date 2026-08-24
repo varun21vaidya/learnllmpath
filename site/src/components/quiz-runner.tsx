@@ -80,17 +80,17 @@ export function QuizRunner({
         <h1 className="nb-title">
           {score.pct}%{" "}
           {score.passed ? (
-            <span className="text-success">— passed!</span>
+            <span className="text-success">Passed!</span>
           ) : (
-            <span className="text-danger">— below 70%</span>
+            <span className="text-danger">Below 70%</span>
           )}
         </h1>
         <p className="nb-subtitle">
           {score.passed
             ? pillarN < 10
               ? `Pillar ${pillarN + 1} is now unlocked for tracking.`
-              : "You finished the final pillar quiz. 🏁"
-            : `You need ≥70% to unlock Pillar ${pillarN + 1}. Retake anytime — only your best score counts.`}
+              : "You finished the final pillar quiz."
+            : `You need ≥70% to unlock Pillar ${pillarN + 1}. Retake anytime; only your best score counts.`}
         </p>
         {alreadyPassed && score.passed && (
           <p className="text-xs font-mono">Best-score tracking keeps your highest attempt.</p>
@@ -111,10 +111,10 @@ export function QuizRunner({
               Retake quiz
             </button>
           )}
-          <Link href="/" className="nb-btn bg-accent-cyan">
+          <Link href="/" className="nb-btn bg-accent-cyan text-on-accent">
             Back to roadmap
           </Link>
-          <Link href="/dashboard" className="nb-btn bg-white">
+          <Link href="/dashboard" className="nb-btn bg-surface">
             Dashboard
           </Link>
         </div>
@@ -146,9 +146,9 @@ export function QuizRunner({
           const state = !feedback
             ? ""
             : isChosen && feedback.correct
-              ? "!bg-[#16a34a] !text-white"
+              ? "bg-accent-green! text-white!"
               : isChosen
-                ? "!bg-danger !text-white"
+                ? "bg-accent-red! text-white!"
                 : "";
           return (
             <button
@@ -156,9 +156,9 @@ export function QuizRunner({
               type="button"
               disabled={pending || Boolean(feedback)}
               onClick={() => selectOption(i)}
-              className={`nb-btn !justify-start text-left !font-semibold bg-white w-full ${state}`}
+              className={`nb-btn justify-start! text-left font-semibold! bg-surface w-full ${state}`}
             >
-              <span className="nb-badge bg-primary mr-2">{LETTERS[i]}</span>
+              <span className="nb-badge bg-primary text-on-accent mr-2">{LETTERS[i]}</span>
               {opt}
             </button>
           );
@@ -168,7 +168,7 @@ export function QuizRunner({
       {feedback && (
         <div
           className={`p-3 border-3 border-ink font-medium text-sm ${
-            feedback.correct ? "bg-[#dcfce7]" : "bg-[#fee2e2]"
+            feedback.correct ? "bg-ok-bg" : "bg-bad-bg"
           }`}
           role="status"
         >

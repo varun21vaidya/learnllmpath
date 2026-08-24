@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
+  ItemAlt,
   Pillar,
   RoadmapData,
   RoadmapItem,
@@ -12,6 +13,16 @@ import type {
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SOURCE = resolve(__dirname, "../../LLM_Agentic_AI_Roadmap_Tracker.md");
+const VARIANT_SOURCES: { path: string; track: "deep" | "free" }[] = [
+  {
+    path: resolve(__dirname, "../../deeeper_AI_Engineer_Roadmap_Zero_to_Job_Ready_roadmap.md"),
+    track: "deep",
+  },
+  {
+    path: resolve(__dirname, "../../free_AI_Engineer_Roadmap_100_Percent_Free.md"),
+    track: "free",
+  },
+];
 const OUT = resolve(__dirname, "../src/data/roadmap.ts");
 
 function slug(text: string): string {
@@ -38,6 +49,111 @@ function classify(resource: string, length: string): ResourceKind {
   if (/docs?\b/.test(r)) return "doc";
   if (/read/.test(length.toLowerCase()) || /\bread\b/.test(r)) return "read";
   return "video";
+}
+
+// ---- variant (deep/free) edition parsing ----
+
+/** Phase N of the deep/free editions maps onto the 10-pillar spine. */
+const PHASE_TO_PILLAR: Record<number, number | "p9-security-split" | null> = {
+  0: null, // tooling setup, skipped
+  1: 1,
+  2: 1,
+  3: 2,
+  4: 3,
+  5: 4,
+  6: 5,
+  7: 6,
+  8: 7,
+  9: 8,
+  10: "p9-security-split", // evals/observability → P9, OWASP/security → P10
+  11: 9, // deployment/production lives beside observability
+  12: null, // capstone, covered by the portfolio page
+};
+
+interface VariantItem {
+  pillarN: number;
+  sectionTitle: string;
+  subtopic: string;
+  resourceName: string;
+  lengthLabel: string;
+}
+
+function normalizeSub(s: string): string {
+  return s
+    .replace(/\*\*\[KEY\]\*\*/gi, "")
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
+    .replace(/\*\*/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function tokens(s: string): Set<string> {
+  return new Set(normalizeSub(s).split(" ").filter(Boolean));
+}
+
+function jaccard(a: Set<string>, b: Set<string>): number {
+  let inter = 0;
+  for (const t of a) if (b.has(t)) inter++;
+  return inter / (a.size + b.size - inter || 1);
+}
+
+/** Security-flavored rows from phase 10 belong to Pillar 10, not Pillar 9. */
+function isSecurityRow(subtopic: string, resource: string): boolean {
+  const s = normalizeSub(`${subtopic} ${resource}`);
+  return /owasp|llm0\d|prompt injection|security/.test(s);
+}
+
+function parseVariantFile(path: string): VariantItem[] {
+  const md = readFileSync(path, "utf-8");
+  const lines = md.split(/\r?\n/);
+  const out: VariantItem[] = [];
+  let phaseN: number | null = null;
+  let sectionTitle = "";
+
+  for (const line of lines) {
+    const phaseMatch = line.match(/^## Phase (\d+) — (.+)$/);
+    if (phaseMatch) {
+      phaseN = parseInt(phaseMatch[1], 10);
+      sectionTitle = "";
+      continue;
+    }
+    if (line.startsWith("## ")) {
+      phaseN = null; // Portfolio / Suggested cadence etc.
+      continue;
+    }
+    if (phaseN === null) continue;
+
+    const sectionMatch = line.match(/^\*\*(.+?)\*\*$/);
+    if (sectionMatch && !/Total:/i.test(sectionMatch[1])) {
+      sectionTitle = sectionMatch[1].trim();
+      continue;
+    }
+
+    if (/^\|/.test(line)) {
+      const cells = line.split("|").map((c) => c.trim()).filter((c) => c !== "");
+      if (cells.length < 4 || cells[0] === "✅") continue;
+      const [, subtopic, resource, length] = cells;
+      if (subtopic.startsWith(":") || /^-+$/.test(subtopic)) continue;
+      if (!subtopic || subtopic === "Subtopic") continue;
+
+      const mapped = PHASE_TO_PILLAR[phaseN] ?? null;
+      if (mapped === null) continue;
+      const pillarN =
+        mapped === "p9-security-split"
+          ? isSecurityRow(subtopic, resource)
+            ? 10
+            : 9
+          : mapped;
+      out.push({
+        pillarN,
+        sectionTitle: sectionTitle || "Extras",
+        subtopic: subtopic.replace(/\*\*/g, "").trim(),
+        resourceName: resource.replace(/^[^\wA-Za-z]+\s*/u, "").replace(/\*\*/g, "").trim(),
+        lengthLabel: length.trim(),
+      });    }
+  }
+  return out;
 }
 
 const md = readFileSync(SOURCE, "utf-8");
@@ -144,12 +260,14 @@ for (let i = 0; i < lines.length; i++) {
   }
 
   if (mode === "sequence" && /^\|/.test(line)) {
-    const cells = line.split("|").map((c) => c.trim()).filter((c) => c !== "");
-    if (cells.length < 3 || cells[0] === "✅") continue;
-    if (/^Weeks|^:---/.test(cells[0])) continue;
+    let cells = line.split("|").map((c) => c.trim()).filter((c) => c !== "");
+    if (cells.length === 0) continue;
+    if (/^[☐✅xX]$/.test(cells[0])) cells = cells.slice(1); // drop checkbox column
+    if (cells.length < 3) continue;
+    if (/^-*$/.test(cells[0]) || /^Weeks$/i.test(cells[0])) continue;
     sequence.push({
       weeks: cells[0],
-      focus: cells[1].replace(/\*\*/g, "").trim(),
+      focus: cells[1].replace(/\*\*/g, "").replace(/\s*\[KEY\]\s*/gi, " ").trim(),
       resources: cells.slice(2).join(" · ").trim(),
       isKey: cells[1].includes("[KEY]"),
     });
@@ -214,10 +332,113 @@ for (const pillar of data.pillars) {
 console.log(`links: matched=${matched} missing=${missing.length}`);
 if (missing.length > 0) console.log("MISSING LINK ENTRIES:\n" + missing.join("\n"));
 
-const banner = `// AUTO-GENERATED by scripts/build-roadmap.ts — edit LLM_Agentic_AI_Roadmap_Tracker.md and regenerate.
+// ---- deep/free edition merge ----
+
+function altFromVariant(v: VariantItem): ItemAlt {
+  const linkEntry = links[v.resourceName];
+  let urlType = classify(v.resourceName, v.lengthLabel);
+  const url = linkEntry?.url ?? null;
+  if (url) {
+    if (/youtube\.com\/watch/.test(url)) urlType = "video";
+    else if (/github\.com/.test(url)) urlType = "repo";
+    else if (/udemy\.com/.test(url)) urlType = "course";
+  }
+  return {
+    resourceName: v.resourceName,
+    url,
+    urlType,
+    lengthLabel: v.lengthLabel,
+    lengthMinutes: parseMinutes(v.lengthLabel),
+  };
+}
+
+for (const { path, track } of VARIANT_SOURCES) {
+  const variants = parseVariantFile(path);
+  let attached = 0;
+  const extraCount: number[] = [];
+
+  for (const pillar of data.pillars) {
+    const pool = pillar.sections.flatMap((s) => s.items);
+    const byExact = new Map(pool.map((i) => [normalizeSub(i.subtopic), i]));
+    const extrasBucket: { sectionTitle: string; items: RoadmapItem[] }[] = [];
+
+    for (const v of variants.filter((x) => x.pillarN === pillar.number)) {
+      const norm = normalizeSub(v.subtopic);
+      const vTokens = tokens(v.subtopic);
+      let best: RoadmapItem | null = byExact.get(norm) ?? null;
+      if (!best) {
+        let bestScore = 0;
+        for (const candidate of pool) {
+          const score = jaccard(vTokens, tokens(candidate.subtopic));
+          if (score > bestScore) {
+            bestScore = score;
+            best = candidate;
+          }
+        }
+        if (bestScore < 0.5) best = null;
+      }
+
+      const alt = altFromVariant(v);
+      if (best) {
+        best.alt = best.alt ?? {};
+        best.alt[track] = alt;
+        attached++;
+      } else {
+        // track-only concept: checkable under its own id, excluded from short-track totals
+        const prefix = track === "deep" ? "d" : "f";
+        let bucket = extrasBucket.find((b) => b.sectionTitle === v.sectionTitle);
+        if (!bucket) {
+          bucket = { sectionTitle: v.sectionTitle, items: [] };
+          extrasBucket.push(bucket);
+        }
+        bucket.items.push({
+          id: `${prefix}${pillar.number}-${slug(v.subtopic)}`,
+          subtopic: v.subtopic,
+          resourceName: v.resourceName,
+          url: alt.url,
+          urlType: alt.urlType,
+          lengthLabel: alt.lengthLabel,
+          lengthMinutes: alt.lengthMinutes,
+          isKey: false,
+        });
+      }
+    }
+
+    if (extrasBucket.length > 0) {
+      pillar.extras = pillar.extras ?? {};
+      pillar.extras[track] = extrasBucket;
+      extraCount.push(extrasBucket.reduce((n, b) => n + b.items.length, 0));
+    }
+  }
+
+  console.log(
+    `track ${track}: variants=${variants.length} attached=${attached} extras=${extraCount.reduce((a, b) => a + b, 0)}`
+  );
+}
+
+// Sanitize AI-tell dashes from generated output. Sources stay untouched;
+// applied AFTER links.json matching so resourceName keys keep resolving.
+function deDash(s: string): string {
+  return s.replace(/[—–]/g, "-");
+}
+function sanitizeStrings<T>(value: T): T {
+  if (typeof value === "string") return deDash(value) as unknown as T;
+  if (Array.isArray(value)) return value.map((v) => sanitizeStrings(v)) as unknown as T;
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      out[k] = sanitizeStrings(v);
+    }
+    return out as unknown as T;
+  }
+  return value;
+}
+const cleanData = sanitizeStrings({ ...data, generatedAt: new Date().toISOString() });
+
+const banner = `// AUTO-GENERATED by scripts/build-roadmap.ts. Edit LLM_Agentic_AI_Roadmap_Tracker.md and regenerate.
 import type { RoadmapData } from "./types";
 
-export const ROADMAP: RoadmapData = ${JSON.stringify(data, null, 2)};
+export const ROADMAP: RoadmapData = ${JSON.stringify(cleanData, null, 2)};
 `;
 
 writeFileSync(OUT, banner, "utf-8");

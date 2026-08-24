@@ -23,7 +23,7 @@ The site renders the public roadmap without any env vars; auth/tracking features
 3. Go to **Project Settings → Database → Connection string → URI** (use the **session pooler** port 5432 variant) and copy it.
 4. Put it in `site/.env.local` as `DATABASE_URL` (replace `[YOUR-PASSWORD]`).
 
-Note: free-tier Supabase projects pause after ~1 week of inactivity — restore from the dashboard if that happens.
+Note: free-tier Supabase projects pause after ~1 week of inactivity - restore from the dashboard if that happens.
 
 ### 3. Google OAuth client
 
@@ -31,10 +31,10 @@ Note: free-tier Supabase projects pause after ~1 week of inactivity — restore 
 2. Application type: **Web application**.
 3. Authorized redirect URIs:
    - `http://localhost:3000/api/auth/callback/google` (dev)
-   - `https://YOUR-APP.vercel.app/api/auth/callback/google` (prod — add after first deploy)
+   - `https://YOUR-APP.vercel.app/api/auth/callback/google` (prod - add after first deploy)
 4. Copy client ID/secret into `.env.local` as `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 
-Skip this to run email/password only — the Google button hides itself when the env vars are missing.
+Skip this to run email/password only - the Google button hides itself when the env vars are missing.
 
 ### 4. Auth secret
 

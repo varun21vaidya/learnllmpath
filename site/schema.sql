@@ -41,3 +41,33 @@ create table if not exists quiz_attempts (
 
 create index if not exists quiz_attempts_user_pillar on quiz_attempts (user_id, pillar_n);
 create index if not exists progress_items_user on progress_items (user_id);
+
+-- ---- migration: profiles, votes, spaced repetition ----
+
+alter table users add column if not exists handle text;
+alter table users add column if not exists is_public boolean not null default true;
+
+create unique index if not exists users_handle_unique on users (handle) where handle is not null;
+
+create table if not exists resource_votes (
+  user_id uuid not null references users(id) on delete cascade,
+  item_id text not null,
+  value smallint not null check (value in (-1, 1)),
+  created_at timestamptz not null default now(),
+  primary key (user_id, item_id)
+);
+
+create index if not exists resource_votes_item on resource_votes (item_id);
+
+-- Leitner boxes 0..5; box 0 = relearn. due_at drives the /review queue.
+create table if not exists srs_cards (
+  user_id uuid not null references users(id) on delete cascade,
+  question_id text not null,
+  box smallint not null default 0 check (box between 0 and 5),
+  due_at date not null default current_date,
+  last_result boolean,
+  updated_at timestamptz not null default now(),
+  primary key (user_id, question_id)
+);
+
+create index if not exists srs_cards_due on srs_cards (user_id, due_at);

@@ -1,7 +1,7 @@
 import { ROADMAP } from "@/data/roadmap";
 import Link from "next/link";
 
-export const metadata = { title: "Portfolio — skilllog" };
+export const metadata = { title: "Learn LLM Path: Portfolio" };
 
 export default function PortfolioPage() {
   return (
@@ -16,7 +16,7 @@ export default function PortfolioPage() {
       <ol className="grid gap-4 sm:grid-cols-2">
         {ROADMAP.portfolio.map((project, i) => (
           <li key={project.id} className="nb-card nb-p-5 flex gap-4 items-start">
-            <span className="nb-badge nb-badge-course !text-base !px-2 !py-1">{i + 1}</span>
+            <span className="nb-badge nb-badge-course text-base! px-2! py-1!">{i + 1}</span>
             <p className="font-semibold leading-snug">{project.title}</p>
           </li>
         ))}

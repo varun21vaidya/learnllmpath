@@ -2,66 +2,17 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getProgress, getQuizBests } from "@/lib/db";
+import { getCompletionDatesSafe } from "@/lib/home-data";
 import { ROADMAP } from "@/data/roadmap";
+import { computeStats, computeStreak, weeklyVelocity, etaWeeks, etaDateString } from "@/lib/stats";
+import { pillarAccent } from "@/lib/ui";
+import { slugForPillar } from "@/data/pillar-slugs";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Dashboard — skilllog" };
-
-const UNTIMED_MINUTES = 20;
-
-function computeStats(completedIds: Set<string>) {
-  let totalMinutes = 0;
-  let doneTimedMinutes = 0;
-  let totalItems = 0;
-  let doneItems = 0;
-
-  for (const p of ROADMAP.pillars) {
-    for (const s of p.sections) {
-      for (const item of s.items) {
-        if (item.urlType === "course") continue; // courses excluded from hour estimates
-        totalItems++;
-        const minutes = item.lengthMinutes ?? (item.urlType === "video" ? null : UNTIMED_MINUTES);
-        if (minutes) totalMinutes += minutes;
-        if (completedIds.has(item.id)) {
-          doneItems++;
-          if (minutes) doneTimedMinutes += minutes;
-        }
-      }
-    }
-  }
-  return {
-    overallPct: totalItems ? Math.round((doneItems / totalItems) * 100) : 0,
-    hoursRemaining: Math.max(0, Math.round(((totalMinutes - doneTimedMinutes) / 60) * 10) / 10),
-    doneItems,
-    totalItems,
-  };
-}
-
-function computeStreak(dates: string[]): { current: number; longest: number } {
-  if (dates.length === 0) return { current: 0, longest: 0 };
-  const sorted = [...new Set(dates)].sort();
-  const DAY = 86400000;
-  let longest = 1;
-  let run = 1;
-  for (let i = 1; i < sorted.length; i++) {
-    const gap = (Date.parse(sorted[i]) - Date.parse(sorted[i - 1])) / DAY;
-    run = gap === 1 ? run + 1 : 1;
-    longest = Math.max(longest, run);
-  }
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - DAY).toISOString().slice(0, 10);
-  const last = sorted[sorted.length - 1];
-  let current = 0;
-  if (last === today || last === yesterday) {
-    current = 1;
-    for (let i = sorted.length - 1; i > 0; i--) {
-      const gap = (Date.parse(sorted[i]) - Date.parse(sorted[i - 1])) / DAY;
-      if (gap === 1) current++;
-      else break;
-    }
-  }
-  return { current, longest };
-}
+export const metadata = {
+  title: "Learn LLM Path: Dashboard",
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -71,19 +22,27 @@ export default async function DashboardPage() {
   let completedIds = new Set<string>();
   let bests = new Map<number, { best_pct: number; passed: boolean }>();
   let dates: string[] = [];
-  let dbError = false;
+  let dbError: string | null = null;
   try {
     [completedIds, bests, dates] = await Promise.all([
       getProgress(userId),
       getQuizBests(userId),
       getCompletionDatesSafe(userId),
     ]);
-  } catch {
-    dbError = true;
+  } catch (err) {
+    dbError = String((err as Error)?.message ?? err).slice(0, 160);
+    console.error("[dashboard] query failed:", err);
   }
 
   const stats = computeStats(completedIds);
   const streak = computeStreak(dates);
+  const weeks = weeklyVelocity(dates, 8);
+  const maxCount = Math.max(1, ...weeks.map((w) => w.count));
+  const last4 = weeks.slice(-4);
+  const perWeek = Math.round((last4.reduce((n, w) => n + w.count, 0) / 4) * 10) / 10;
+  const remaining = stats.totalItems - stats.doneItems;
+  const eta = etaWeeks(remaining, perWeek);
+  const etaDate = eta !== null ? etaDateString(eta) : null;
 
   return (
     <main className="nb-page nb-stack-lg">
@@ -94,7 +53,7 @@ export default async function DashboardPage() {
         </div>
         <div className="flex flex-wrap gap-3">
           <div className="nb-card nb-p-3 text-center min-w-24">
-            <p className="font-black text-2xl">🔥 {streak.current}</p>
+            <p className="font-black text-2xl">{streak.current}</p>
             <p className="text-[10px] font-mono uppercase">day streak</p>
           </div>
           <div className="nb-card nb-p-3 text-center min-w-24">
@@ -105,12 +64,20 @@ export default async function DashboardPage() {
             <p className="font-black text-2xl">{stats.hoursRemaining}h</p>
             <p className="text-[10px] font-mono uppercase">left (timed)</p>
           </div>
+          <div className="nb-card nb-card-accent nb-p-3 text-center min-w-28">
+            <p className="font-black text-2xl">{stats.overallPct}%</p>
+            <p className="text-[10px] font-mono uppercase">complete</p>
+          </div>
         </div>
       </header>
 
       {dbError && (
         <div className="nb-callout font-bold">
-          Database not configured yet — set DATABASE_URL in .env.local to see your live stats.
+          Database error: <code className="font-mono text-xs">{dbError}</code>
+          <div className="text-sm font-semibold mt-1">
+            Apply <code className="font-mono text-xs">site/schema.sql</code> in Supabase SQL
+            Editor, then reload.
+          </div>
         </div>
       )}
 
@@ -121,8 +88,58 @@ export default async function DashboardPage() {
             {stats.doneItems}/{stats.totalItems} items · {stats.overallPct}%
           </span>
         </div>
-        <div className="nb-progress-track" role="progressbar" aria-valuenow={stats.overallPct} aria-valuemin={0} aria-valuemax={100}>
+        <div
+          className="nb-progress-track"
+          role="progressbar"
+          aria-valuenow={stats.overallPct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <div className="nb-progress-fill" style={{ width: `${stats.overallPct}%` }} />
+        </div>
+        <p className="text-xs font-mono text-muted">
+          {eta !== null ? (
+            <>
+              At your pace of <strong>{perWeek} items/week</strong>, you finish in ~{eta} week
+              {eta === 1 ? "" : "s"}, around{" "}
+              <strong className="underline decoration-2 underline-offset-2">{etaDate}</strong>.{" "}
+              <Link href="/plan" className="underline font-bold">
+                Build a plan →
+              </Link>
+            </>
+          ) : remaining > 0 ? (
+            <>
+              Complete a few items this week and we&apos;ll project your finish date.{" "}
+              <Link href="/plan" className="underline font-bold">
+                Set a schedule →
+              </Link>
+            </>
+          ) : (
+            <>Roadmap complete. Time to ship portfolio projects!</>
+          )}
+        </p>
+      </section>
+
+      <section className="nb-card nb-p-5 nb-stack">
+        <h2 className="font-black text-lg">Velocity: last 8 weeks</h2>
+        <div className="flex items-end justify-between gap-2 h-32" role="img" aria-label="Items completed per week, last 8 weeks">
+          {weeks.map((w) => (
+            <div key={w.weekStart} className="flex flex-col items-center gap-1 flex-1 h-full justify-end">
+              <span className="font-mono text-[10px] font-bold">{w.count || ""}</span>
+              <div
+                className={`w-full border-3 border-ink ${w.count > 0 ? "bg-primary" : "bg-surface opacity-40"}`}
+                style={{ height: `${Math.max(4, (w.count / maxCount) * 100)}%` }}
+                title={`${w.count} completed week of ${w.weekStart}`}
+              />
+              <span className="font-mono text-[9px] text-muted">
+                {new Date(w.weekStart + "T00:00:00Z").toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                  timeZone: "UTC",
+                })}
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -136,8 +153,10 @@ export default async function DashboardPage() {
             <div key={pillar.slugId} className="nb-card nb-p-4 nb-stack">
               <div className="flex items-center justify-between gap-2">
                 <h3 className="font-bold text-sm leading-tight">
-                  <span className="font-mono mr-1">{pillar.number}.</span>
-                  {pillar.title}
+                  <Link href={`/pillars/${slugForPillar(pillar.number)}`} className="hover:underline">
+                    <span className={`${pillarAccent(pillar.number)} nb-badge mr-2`}>{pillar.number}</span>
+                    {pillar.title}
+                  </Link>
                 </h3>
                 {best && (
                   <span
@@ -149,7 +168,7 @@ export default async function DashboardPage() {
                 )}
               </div>
               <div
-                className="nb-progress-track !h-4"
+                className="nb-progress-track h-4!"
                 role="progressbar"
                 aria-label={`${pillar.title} completion`}
                 aria-valuenow={pct}
@@ -175,13 +194,8 @@ export default async function DashboardPage() {
 
       <p className="text-xs font-mono opacity-70">
         Hour estimate convention: videos use source lengths; articles/docs count as{" "}
-        {UNTIMED_MINUTES} min each; Udemy courses excluded.
+        {20} min each; Udemy courses excluded.
       </p>
     </main>
   );
-}
-
-async function getCompletionDatesSafe(userId: string): Promise<string[]> {
-  const { getCompletionDates } = await import("@/lib/db");
-  return getCompletionDates(userId);
 }

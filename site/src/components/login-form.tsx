@@ -99,7 +99,7 @@ export function SignOutButton() {
         await signOut({ redirectTo: "/" });
       }}
     >
-      <button type="submit" className="nb-btn nb-btn-small">
+      <button type="submit" className="nb-btn nb-btn-small bg-surface text-ink">
         Log out
       </button>
     </form>

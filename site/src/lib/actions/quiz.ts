@@ -1,7 +1,7 @@
 "use server";
 
 import { requireUserId } from "@/lib/auth";
-import { recordQuizAttempt, hasPassedQuiz } from "@/lib/db";
+import { recordQuizAttempt, hasPassedQuiz, seedSrsFromQuiz } from "@/lib/db";
 import { QUIZZES } from "@/data/quizzes";
 
 const PASS_THRESHOLD = 70;
@@ -68,6 +68,16 @@ export async function finishQuiz(
   const scorePct = Math.round((correctCount / quiz.questions.length) * 100);
   const passed = scorePct >= PASS_THRESHOLD;
   await recordQuizAttempt(userId, pillarN, scorePct, passed);
+
+  // Feed spaced repetition: every missed question becomes/resets a review card.
+  const wrongIds = quiz.questions
+    .filter((q) => answers[q.id] !== q.answerIndex)
+    .map((q) => q.id);
+  try {
+    await seedSrsFromQuiz(userId, wrongIds);
+  } catch {
+    // SRS is best-effort; never block quiz completion
+  }
 
   const prevPassed = pillarN > 1 ? await hasPassedQuiz(userId, pillarN - 1) : true;
   return { ok: true, scorePct, passed: passed && prevPassed !== undefined ? passed : passed };
