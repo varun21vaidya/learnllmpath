@@ -6,7 +6,7 @@ export function TrackToggle({ path, active }: { path: string; active: ParsedTrac
   return (
     <nav
       aria-label="Learning track"
-      className="inline-flex max-w-full overflow-hidden border border-ink bg-surface shadow-[3px_3px_0_color-mix(in_srgb,var(--color-ink)_15%,transparent)]"
+      className="nb-track-toggle inline-flex max-w-full overflow-hidden border border-ink bg-surface shadow-[3px_3px_0_color-mix(in_srgb,var(--color-ink)_15%,transparent)]"
     >
       {TRACKS.map((t, i) => (
         <Link
